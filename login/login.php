@@ -1,10 +1,11 @@
 <?php
 session_start();
 require_once __DIR__ . '/../logica/conexion.php';
+require_once __DIR__ . '/../logica/reserva_helper.php';
 
 $redirect = $_GET['redirect'] ?? '../index.php';
 // Evitamos que "redirect" se use para mandar a otro dominio.
-if (!preg_match('/^(?:\.\.\/)?[a-zA-Z0-9_\-\.\/]+\.php(\?.*)?$/', $redirect)) {
+if (!preg_match('/^(?:\.\.\/)?[a-zA-Z0-9_\-\/\.]+\.php(\?.*)?$/', $redirect)) {
     $redirect = '../index.php';
 }
 
@@ -27,7 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['IdUsuario'] = (int) $usuario['IdUsuario'];
             $_SESSION['NombreUsuario'] = $usuario['Nombre'] . ' ' . $usuario['Apellido'];
 
-            header('Location: ' . $redirect);
+            $resultadoReserva = completarReservaPendiente($pdo, (int) $usuario['IdUsuario']);
+            if ($resultadoReserva !== null) {
+                $separador = str_contains($redirect, '?') ? '&' : '?';
+                header('Location: ' . $redirect . $separador . $resultadoReserva);
+            } else {
+                header('Location: ' . $redirect);
+            }
             exit;
         }
 

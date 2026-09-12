@@ -14,10 +14,11 @@ session_start();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
 
   <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="experiencias.css"/>
 </head>
 <body>
 
-<!-- ── barra de nav, arriba de todo ── -->
+<!-- ── NAVBAR ── -->
 <nav class="navbar-nomada navbar navbar-expand-lg px-3 px-lg-5">
   <div class="container-fluid">
     <a class="nav-logo" href="#">Nómada<span class="dot">.</span></a>
@@ -29,6 +30,7 @@ session_start();
         <li class="nav-item"><a class="nav-link-item nav-link" href="#">Inicio</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="#destinos">Destinos</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="#paquetes">Paquetes</a></li>
+        <li class="nav-item"><a class="nav-link-item nav-link" href="logica/mis-reservas.php">Mis reservas</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="#contacto">Contacto</a></li>
       </ul>
       <?php if (!empty($_SESSION['IdUsuario'])) : ?>
@@ -39,13 +41,13 @@ session_start();
           <a href="login/logout.php" class="btn btn-login-nav">Cerrar sesión</a>
         </div>
       <?php else : ?>
-        <a href="login/login.php?redirect=../index.php" class="btn btn-login-nav mt-2 mt-lg-0">Iniciar sesión</a>
+        <a href="login/login.php" class="btn btn-login-nav mt-2 mt-lg-0">Iniciar sesión</a>
       <?php endif; ?>
     </div>
   </div>
 </nav>
 
-<!-- ── inicio de la pag, hero ── -->
+<!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-photo"></div>
   <div class="hero-overlay"></div>
@@ -84,7 +86,7 @@ session_start();
         </div>
       </div>
 
-      <!-- busqueda x destino -->
+      <!-- Right: search -->
       <div class="col-lg-7 search-wrap">
         <div class="search-box">
           <p style="font-size:.75rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-light); margin-bottom:1.25rem;">Buscá tu próximo viaje</p>
@@ -105,8 +107,6 @@ session_start();
               <select class="form-select search-input" name="destino" required>
                 <option value="">¿A dónde vas?</option>
                 <option value="cancun">Cancún, México</option>
-                <option value="roma">Roma, Italia</option>
-                <option value="miami">Miami, EEUU</option>
                 <option value="paris">París, Francia</option>
                 <option value="tokio">Tokio, Japón</option>
                 <option value="dubai">Dubái, EAU</option>
@@ -145,7 +145,7 @@ session_start();
   </div>
 </section>
 
-<!-- ── barrita ── -->
+<!-- ── TRUST BAR ── -->
 <div class="trust-bar">
   <div class="container">
     <div class="row g-3 justify-content-center">
@@ -189,7 +189,7 @@ session_start();
   </div>
 </div>
 
-<!-- ── destinos ── -->
+<!-- ── DESTINOS ── -->
 <section class="dest-section" id="destinos">
   <div class="container">
     <div class="row align-items-end mb-4">
@@ -206,7 +206,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d1">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/cancunimg.jpg" class="dest-card-img" alt="Cancún" loading="lazy"/>
+            <img src="img/destinos/cancun.jpg" class="dest-card-img" alt="Cancún" loading="lazy"/>
             <span class="dest-region-badge">Caribe</span>
           </div>
           <div class="dest-card-body">
@@ -214,7 +214,7 @@ session_start();
             <div class="dest-card-desc">Aguas turquesas, ruinas mayas y la mejor vida nocturna del Caribe mexicano.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$850 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="destinos/destino_cancun.php">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=cancun">Ver más</a>
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d2">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/parisimg.jpg" class="dest-card-img" alt="París" loading="lazy"/>
+            <img src="img/destinos/parisimg.jpg" class="dest-card-img" alt="París" loading="lazy"/>
             <span class="dest-region-badge">Europa</span>
           </div>
           <div class="dest-card-body">
@@ -230,7 +230,7 @@ session_start();
             <div class="dest-card-desc">Arte, gastronomía y arquitectura en la ciudad más romántica del mundo.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$1.420 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="destinos/destino_paris.php">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=paris">Ver más</a>
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d3">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/dubaiimg.jpg" class="dest-card-img" alt="Dubái" loading="lazy"/>
+            <img src="img/destinos/dubaiimg.jpg" class="dest-card-img" alt="Dubái" loading="lazy"/>
             <span class="dest-region-badge">Middle East</span>
           </div>
           <div class="dest-card-body">
@@ -246,7 +246,7 @@ session_start();
             <div class="dest-card-desc">Rascacielos, lujo y desierto dorado en la ciudad del futuro.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$1.680 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="destino.php">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=dubai">Ver más</a>
             </div>
           </div>
         </div>
@@ -254,7 +254,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d1">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/tokioimg.jpg" class="dest-card-img" alt="Tokio" loading="lazy"/>
+            <img src="img/destinos/tokioimg.jpg" class="dest-card-img" alt="Tokio" loading="lazy"/>
             <span class="dest-region-badge">Asia</span>
           </div>
           <div class="dest-card-body">
@@ -262,7 +262,7 @@ session_start();
             <div class="dest-card-desc">Tradición y vanguardia en la megalópolis más fascinante del planeta.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$2.100 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="destino.php">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=tokio">Ver más</a>
             </div>
           </div>
         </div>
@@ -270,7 +270,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d2">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/brasilimg.jpg" class="dest-card-img" alt="Maceio" loading="lazy"/>
+            <img src="img/destinos/brasilimg.jpg" class="dest-card-img" alt="Maceio" loading="lazy"/>
             <span class="dest-region-badge">Sudamérica</span>
           </div>
           <div class="dest-card-body">
@@ -278,7 +278,7 @@ session_start();
             <div class="dest-card-desc">Playas de arena blanca, selva tropical y cultura vibrante en la costa brasileña.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$890 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="destino.php">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=maceio">Ver más</a>
             </div>
           </div>
         </div>
@@ -286,7 +286,7 @@ session_start();
       <div class="col-md-6 col-lg-4 fade-up d3">
         <div class="dest-card">
           <div class="dest-img-wrap">
-            <img src="img/munichimg.jpg" class="dest-card-img" alt="Munich" loading="lazy"/>
+            <img src="img/destinos/munichimg.jpg" class="dest-card-img" alt="Munich" loading="lazy"/>
             <span class="dest-region-badge">Europa</span>
           </div>
           <div class="dest-card-body">
@@ -294,7 +294,7 @@ session_start();
             <div class="dest-card-desc">Historia, cultura y naturaleza en la ciudad de Baviera.</div>
             <div class="dest-card-footer">
               <div><div class="dest-from">Desde</div><div class="dest-amount">$2.180 <small>USD</small></div></div>
-              <a class="btn-ver-mas" href="#">Ver más</a>
+              <a class="btn-ver-mas" href="destinos/destino.php?slug=munich">Ver más</a>
             </div>
           </div>
         </div>
@@ -304,8 +304,7 @@ session_start();
 </section>
 
 
-
-<!-- paquetes -->
+<!-- ── experiencias ── -->
 <section class="exp-section" id="paquetes">
   <div class="container">
     <div class="row mb-3">
@@ -326,8 +325,8 @@ session_start();
   </div>
 </section>
 
-<!-- ofertas -->   
-<section class="offers-section">
+<!-- ── ofertas── -->
+<section class="offers-section" id="ofertas">
   <div class="container">
     <div class="row align-items-end mb-4">
       <div class="col-lg-6 fade-up">
@@ -355,7 +354,7 @@ session_start();
                 <div class="offer-old">USD 3.800</div>
                 <div class="offer-new">2.470 <small>USD</small></div>
               </div>
-              <a class="btn btn-reservar" href="#">Reservar</a>
+              <a class="btn btn-reservar" href="paquetes/paquete.php?slug=miami-crucero">Reservar</a>
             </div>
             <div class="countdown">
               <div class="cdblock"><div class="cdnum" id="d1">02</div><div class="cdlbl">días</div></div>
@@ -384,7 +383,7 @@ session_start();
                 <div class="offer-old">USD 4.200</div>
                 <div class="offer-new">3.020 <small>USD</small></div>
               </div>
-              <a class="btn btn-reservar" href="#">Reservar</a>
+              <a class="btn btn-reservar" href="paquetes/paquete.php?slug=europa-clasica">Reservar</a>
             </div>
             <div class="countdown">
               <div class="cdblock"><div class="cdnum">05</div><div class="cdlbl">días</div></div>
@@ -413,7 +412,7 @@ session_start();
                 <div class="offer-old">USD 1.870</div>
                 <div class="offer-new">1.495 <small>USD</small></div>
               </div>
-              <a class="btn btn-reservar" href="#">Reservar</a>
+              <a class="btn btn-reservar" href="paquetes/paquete.php?slug=patagonia">Reservar</a>
             </div>
             <div class="countdown">
               <div class="cdblock"><div class="cdnum">01</div><div class="cdlbl">días</div></div>
@@ -428,7 +427,7 @@ session_start();
   </div>
 </section>
 
-<!-- ── contactos ── -->
+<!-- ── Contacto ── -->
 <div class="cta-band fade-up">
   <div class="container">
     <h2>¿No encontrás lo que buscás?</h2>
@@ -532,125 +531,125 @@ session_start();
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
 
-  const experiences = [ // las imagenes de los paquetes y los botones que llevan a cada experiencia!!
+  const experiences = [
     {
       category: 'Playa',
       title: 'Paraísos caribeños todo incluido',
       subtitle: 'Resorts frente al mar con playa privada y experiencias premium.',
-      image: "img/playa1img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/playa1img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Playa',
       size: 'main'
     },
     {
       category: 'Playa',
       title: 'Costa Atlántica Argentina',
       subtitle: 'Surf, familia y descanso en costas imperdibles.',
-      image: "img/playa2img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/playa2img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Playa',
       size: 'sm'
     },
     {
       category: 'Playa',
       title: 'Islas del Caribe',
       subtitle: 'Buceo, arena blanca y puestas de sol inolvidables.',
-      image: "img/playa3img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/playa3img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Playa',
       size: 'sm'
     },
     {
       category: 'Montaña',
       title: 'Visita los Andes',
       subtitle: 'Senderos, lagunas y cumbres para los amantes de la altura.',
-      image: "img/montanas1img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/montanas1img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Monta%C3%B1a',
       size: 'main'
     },
     {
       category: 'Montaña',
       title: 'Refugios de montaña',
       subtitle: 'Alojamientos con vistas épicas y caminatas al amanecer.',
-      image: "img/montanas2img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/montanas2img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Monta%C3%B1a',
       size: 'sm'
     },
     {
       category: 'Montaña',
       title: 'Cumbres patagónicas',
       subtitle: 'Rutas de altura y paisajes glaciales para explorar.',
-      image: "img/montanas3img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/montanas3img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Monta%C3%B1a',
       size: 'sm'
     },
     {
       category: 'Aventura',
       title: 'Safari extremo',
       subtitle: 'Rutas off-road, rafting y adrenalina en cada paso.',
-      image: "img/aventura1img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/aventura1img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Aventura',
       size: 'main'
     },
     {
       category: 'Aventura',
       title: 'Rafting y ríos salvajes',
       subtitle: 'Descensos intensos y campamentos junto al agua.',
-      image: "img/aventuras2img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/aventuras2img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Aventura',
       size: 'sm'
     },
     {
       category: 'Aventura',
       title: 'Expedición 4x4',
       subtitle: 'Terrenos extremos y rutas fuera de lo común.',
-      image: "img/aventuras3img.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/aventuras3img.jpg",
+      link: 'paquetes/experiencias.php?categoria=Aventura',
       size: 'sm'
     },
     {
       category: 'Gastronomía',
       title: 'Tours culinarios en Europa',
       subtitle: 'Sabores locales, mercados y cenas gourmet.',
-      image: 'img/gastro1img.jpg',
-      link: 'paquetes_playa.php',
+      image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=900&q=80',
+      link: 'paquetes/experiencias.php?categoria=Gastronom%C3%ADa',
       size: 'main'
     },
     {
       category: 'Gastronomía',
       title: 'Bares y bodegas',
       subtitle: 'Degustaciones y experiencias de vinos exclusivos.',
-      image: 'img/gastro2img.jpg',
-      link: 'paquetes_playa.php',
+      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80',
+      link: 'paquetes/experiencias.php?categoria=Gastronom%C3%ADa',
       size: 'sm'
     },
     {
       category: 'Gastronomía',
       title: 'Cocina local auténtica',
       subtitle: 'Clases y rutas de sabores tradicionales.',
-      image: 'img/gastro3img.jpg',
-      link: 'paquetes_playa.php',
+      image: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=500&q=80',
+      link: 'paquetes/experiencias.php?categoria=Gastronom%C3%ADa',
       size: 'sm'
     },
     {
       category: 'Familiar',
       title: 'Vacaciones en familia',
       subtitle: 'Planes para todos los gustos: parques, playa y diversión.',
-      image: "img/familiar1.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/familiar1.jpg",
+      link: 'paquetes/experiencias.php?categoria=Familiar',
       size: 'main'
     },
     {
       category: 'Familiar',
       title: 'Parques temáticos',
       subtitle: 'Diversión, shows y experiencias para grandes y chicos.',
-      image: "img/familiar2.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/familiar2.jpg",
+      link: 'paquetes/experiencias.php?categoria=Familiar',
       size: 'sm'
     },
     {
       category: 'Familiar',
       title: 'Estadías a medida',
       subtitle: 'Alojamientos familiares con actividades seguras.',
-      image: "img/familiar3.jpg",
-      link: 'paquetes_playa.php',
+      image: "img/experiencias/familiar3.jpg",
+      link: 'paquetes/experiencias.php?categoria=Familiar',
       size: 'sm'
     }
   ];
@@ -684,7 +683,6 @@ session_start();
             <div class="exp-info">
               <div class="exp-cat">${item.category}</div>
               <div class="exp-name">${item.title}</div>
-              
             </div>
           </a>
         `;

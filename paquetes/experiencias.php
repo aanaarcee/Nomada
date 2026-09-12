@@ -1,48 +1,17 @@
 <?php
 session_start();
+require_once __DIR__ . '/../logica/conexion.php';
+require_once __DIR__ . '/../logica/Experiencia.php';
 
-$experiencias = [
-    [
-        'nombre' => 'Cancún Paradise',
-        'pais' => 'México',
-        'duracion' => '7 días / 6 noches',
-        'temporada' => 'Temporada alta',
-        'hotel' => 'Hotel Grand Ocean',
-        'pasajeros' => '2 pasajeros',
-        'excursiones' => 'Snorkel, cenote y tour en catamarán',
-        'precio' => '$1.240 USD',
-        'imagen' => 'img/cancunimg.jpg',
-    ],
-    [
-        'nombre' => 'Playa del Carmen',
-        'pais' => 'México',
-        'duracion' => '6 días / 5 noches',
-        'temporada' => 'Temporada alta',
-        'hotel' => 'Resort Coral Beach',
-        'pasajeros' => '4 pasajeros',
-        'excursiones' => '-',
-        'precio' => '$980 USD',
-        'imagen' => 'img/playa1img.jpg',
-    ],
-    [
-        'nombre' => 'Punta Cana',
-        'pais' => 'República Dominicana',
-        'duracion' => '8 días / 7 noches',
-        'temporada' => 'Temporada alta',
-        'hotel' => 'Boutique Mar Azul',
-        'pasajeros' => '2 pasajeros',
-        'excursiones' => 'Catamaran y spa',
-        'precio' => '$1.560 USD',
-        'imagen' => 'img/playa2img.jpg',
-    ],
-];
+$categoria = $_GET['categoria'] ?? 'Playa';
+$experiencias = Experiencia::listarPorCategoria($pdo, $categoria);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Experiencias | Nómada</title>
+  <title>Experiencias — <?php echo htmlspecialchars($categoria); ?> | Nómada</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -72,7 +41,7 @@ $experiencias = [
           </span>
           <a href="../login/logout.php" class="btn btn-login-nav">Cerrar sesión</a>
         <?php else : ?>
-          <a href="../login/login.php?redirect=paquetes/paquetes_playa.php" class="btn btn-login-nav">Iniciar sesión</a>
+          <a href="../login/login.php?redirect=<?php echo urlencode('../paquetes/experiencias.php?categoria=' . $categoria); ?>" class="btn btn-login-nav">Iniciar sesión</a>
         <?php endif; ?>
       </div>
     </div>
@@ -83,47 +52,47 @@ $experiencias = [
   <div class="container">
     <div class="text-center mb-5">
       <span class="section-label">Experiencias</span>
-      <h1 class="section-title">Nuestros mejores paquetes</h1>
-      <p class="section-sub mx-auto">Descubrí los viajes con playa más buscados para disfrutar de sol, relax y aventuras en familia o en pareja.</p>
+      <h1 class="section-title">Paquetes de <?php echo htmlspecialchars($categoria); ?></h1>
+      <p class="section-sub mx-auto">Descubrí los viajes de <?php echo htmlspecialchars(mb_strtolower($categoria, 'UTF-8')); ?> más buscados para disfrutar al máximo.</p>
     </div>
 
-    <div class="mb-4">
-      <h2 class="section-title">Destinos con Playa</h2>
-    </div>
-
-    <div class="row g-4">
-      <?php foreach ($experiencias as $experiencia) : ?>
-        <div class="col-12">
-          <a href="../destinos/destino_cancun.php" class="dest-card text-decoration-none d-block h-100">
-            <div class="row g-0 align-items-stretch">
-              <div class="col-md-4">
-                <img src="<?php echo htmlspecialchars($experiencia['imagen']); ?>" class="dest-card-img" alt="<?php echo htmlspecialchars($experiencia['nombre']); ?>" loading="lazy"/>
-              </div>
-              <div class="col-md-5">
-                <div class="dest-card-body h-100 d-flex flex-column justify-content-between">
-                  <div>
-                    <div class="dest-card-name mb-2"><?php echo htmlspecialchars($experiencia['nombre']); ?></div>
-                    <div class="dest-card-desc mb-2"><strong>País:</strong> <?php echo htmlspecialchars($experiencia['pais']); ?></div>
-                    <div class="dest-card-desc mb-2"><strong>Duración:</strong> <?php echo htmlspecialchars($experiencia['duracion']); ?></div>
-                    <div class="dest-card-desc mb-2"><strong>Temporada:</strong> <?php echo htmlspecialchars($experiencia['temporada']); ?></div>
-                    <div class="dest-card-desc mb-2"><strong>Hotel:</strong> <?php echo htmlspecialchars($experiencia['hotel']); ?></div>
-                    <div class="dest-card-desc mb-2"><strong>Pasajeros incluidos:</strong> <?php echo htmlspecialchars($experiencia['pasajeros']); ?></div>
-                    <div class="dest-card-desc mb-0"><strong>Excursiones:</strong> <?php echo htmlspecialchars($experiencia['excursiones']); ?></div>
+    <?php if (!$experiencias) : ?>
+      <div class="dest-info-card p-4 p-md-5 text-center mx-auto" style="max-width: 640px;">
+        <h3 class="mb-2">Estamos preparando estos paquetes</h3>
+        <p class="text-muted mb-0">Todavía no cargamos paquetes de <?php echo htmlspecialchars($categoria); ?>. Volvé a pasar pronto.</p>
+      </div>
+    <?php else : ?>
+      <div class="row g-4">
+        <?php foreach ($experiencias as $experiencia) : ?>
+          <div class="col-12">
+            <a href="<?php echo htmlspecialchars($experiencia->link); ?>" class="dest-card text-decoration-none d-block h-100">
+              <div class="row g-0 align-items-stretch">
+                <div class="col-md-5">
+                  <div class="dest-card-body h-100 d-flex flex-column justify-content-between">
+                    <div>
+                      <div class="dest-card-name mb-2"><?php echo htmlspecialchars($experiencia->nombre); ?></div>
+                      <div class="dest-card-desc mb-2"><strong>País:</strong> <?php echo htmlspecialchars($experiencia->pais); ?></div>
+                      <div class="dest-card-desc mb-2"><strong>Duración:</strong> <?php echo htmlspecialchars($experiencia->duracion); ?></div>
+                      <div class="dest-card-desc mb-2"><strong>Temporada:</strong> <?php echo htmlspecialchars($experiencia->temporada); ?></div>
+                      <div class="dest-card-desc mb-2"><strong>Hotel:</strong> <?php echo htmlspecialchars($experiencia->hotel); ?></div>
+                      <div class="dest-card-desc mb-2"><strong>Pasajeros incluidos:</strong> <?php echo htmlspecialchars($experiencia->pasajerosTexto()); ?></div>
+                      <div class="dest-card-desc mb-0"><strong>Excursiones:</strong> <?php echo htmlspecialchars($experiencia->excursiones); ?></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 border-start border-light">
+                  <div class="dest-card-body h-100 d-flex flex-column justify-content-center align-items-start">
+                    <div class="dest-from">Precio desde</div>
+                    <div class="dest-amount mb-3">$<?php echo $experiencia->precioFormateado(); ?> <small><?php echo htmlspecialchars($experiencia->moneda); ?></small></div>
+                    <span class="btn-ver-mas">Ver paquete</span>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3 border-start border-light">
-                <div class="dest-card-body h-100 d-flex flex-column justify-content-center align-items-start">
-                  <div class="dest-from">Precio desde</div>
-                  <div class="dest-amount mb-3"><?php echo htmlspecialchars($experiencia['precio']); ?></div>
-                  <span class="btn-ver-mas">Ver paquete</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      <?php endforeach; ?>
-    </div>
+            </a>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -144,7 +113,7 @@ $experiencias = [
         <ul class="footer-list">
           <li><a href="../index.php">Inicio</a></li>
           <li><a href="../index.php#destinos">Destinos</a></li>
-          <li><a href="paquetes_playa.php">Paquetes de playa</a></li>
+          <li><a href="../index.php#paquetes">Experiencias</a></li>
         </ul>
       </div>
       <div class="col-lg-3 col-6">

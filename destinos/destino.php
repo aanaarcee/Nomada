@@ -1,10 +1,19 @@
 <?php
 session_start();
 require_once __DIR__ . '/../logica/conexion.php';
+require_once __DIR__ . '/../logica/Destino.php';
 
-// ID real de este destino en la tabla `destinos` de la base de datos.
-// Ajustalo según el IdDestino que tenga París cuando cargues los datos.
-const ID_DESTINO_DB = 1;
+$slug = $_GET['slug'] ?? '';
+$destino = $slug !== '' ? Destino::buscarPorSlug($pdo, $slug) : null;
+
+// El destino no existe en la base: volvemos al listado, igual que hacía
+// buscar.php antes de que existiera esta plantilla.
+if (!$destino) {
+    header('Location: ../index.php?no_disponible=1#destinos');
+    exit;
+}
+
+$volverA = '../destinos/destino.php?slug=' . urlencode($destino->slug);
 
 $origenPrefill = $_GET['origen'] ?? '';
 $fechaIdaPrefill = $_GET['fecha_ida'] ?? '';
@@ -23,70 +32,13 @@ if (isset($_GET['ok']) && $_GET['ok'] === 'carrito') {
     $mensaje = 'No pudimos procesar tu pedido. Iniciá sesión e intentá de nuevo.';
     $mensajeTipo = 'danger';
 }
-
-$destino = [
-    'nombre' => 'París',
-    'pais' => 'Francia',
-    'categoria' => 'Ciudad',
-    'precio' => 1420,
-    'moneda' => 'USD',
-    'imagen' => 'img/parisimg.jpg',
-    'descripcion' => 'Vive la magia de París con nuestro paquete exclusivo que combina lujo, cultura y gastronomía en la ciudad del amor. Desde la majestuosidad de la Torre Eiffel hasta los encantadores cafés de Montmartre, este viaje te ofrece una experiencia inolvidable en cada rincón de la capital francesa.',
-    'servicios' => [
-        'Alojamiento 5 estrellas',
-        'Traslados aeropuerto-hotel-aeropuerto',
-        'Desayuno incluido',
-        'Asistencia en español 24/7',
-        'Seguro básico de viaje',
-    ],
-    'actividades' => [
-        'Visita a la Torre Eiffel',
-        'Tour por el Louvre',
-        'Paseo en barco por el río Senna',
-        'Cena en un restaurante histórico',
-        'Compras en el mercado de Saint-Germain',
-    ],
-    'itinerario' => [
-        [
-            'dia' => 'Día 1',
-            'titulo' => 'Bienvenida en la ciudad luz',
-            'detalles' => 'Llegada a París, traslado al hotel y paseo de bienvenida por el Sena al anochecer.',
-        ],
-        [
-            'dia' => 'Día 2',
-            'titulo' => 'Louvre y corazón histórico',
-            'detalles' => 'Visita guiada al Museo del Louvre y recorrido por la Île de la Cité, con entrada a Notre-Dame.',
-        ],
-        [
-            'dia' => 'Día 3',
-            'titulo' => 'Torre Eiffel y Montmartre',
-            'detalles' => 'Ascenso a la Torre Eiffel, tarde en Montmartre y cena en un bistrot tradicional.',
-        ],
-        [
-            'dia' => 'Día 4',
-            'titulo' => 'Versalles y jardines reales',
-            'detalles' => 'Excursión de medio día al Palacio de Versalles y tarde libre para descubrir el Barrio Latino.',
-        ],
-        [
-            'dia' => 'Día 5',
-            'titulo' => 'Compras y despedida',
-            'detalles' => 'Mañana libre para compras en Saint-Germain y traslado al aeropuerto para el vuelo de regreso.',
-        ],
-    ],
-    'galeria' => [
-        'img/cancunimg.jpg',
-        'img/playa1img.jpg',
-        'img/playa2img.jpg',
-        'img/playa3img.jpg',
-    ],
-];
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Destino — <?php echo htmlspecialchars($destino['nombre']); ?> | Nómada</title>
+  <title>Destino — <?php echo htmlspecialchars($destino->nombre); ?> | Nómada</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -107,6 +59,7 @@ $destino = [
         <li class="nav-item"><a class="nav-link-item nav-link" href="../index.php">Inicio</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="../index.php#destinos">Destinos</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="../index.php#paquetes">Paquetes</a></li>
+        <li class="nav-item"><a class="nav-link-item nav-link" href="../logica/mis-reservas.php">Mis reservas</a></li>
         <li class="nav-item"><a class="nav-link-item nav-link" href="../index.php#contacto">Contacto</a></li>
       </ul>
       <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
@@ -116,36 +69,35 @@ $destino = [
           </span>
           <a href="../login/logout.php" class="btn btn-login-nav">Cerrar sesión</a>
         <?php else : ?>
-          <a href="../login/login.php?redirect=destinos/destino_paris.php" class="btn btn-login-nav">Iniciar sesión</a>
+          <a href="../login/login.php?redirect=<?php echo urlencode($volverA); ?>" class="btn btn-login-nav">Iniciar sesión</a>
         <?php endif; ?>
-        <a href="#reserva" class="btn btn-login-nav">Reservar</a>
       </div>
     </div>
   </div>
 </nav>
 
 <section class="hero-dest">
-  <div class="hero-bg" style="background-image: url('<?php echo htmlspecialchars($destino['imagen']); ?>');"></div>
+  <div class="hero-bg" style="background-image: url('<?php echo $destino->heroImagenId ? '../logica/imagen.php?id=' . $destino->heroImagenId : ''; ?>');"></div>
   <div class="container hero-inner py-5">
     <div class="row align-items-end">
       <div class="col-lg-7">
-        <span class="dest-badge"><?php echo htmlspecialchars($destino['categoria']); ?></span>
-        <h1 class="hero-title"><?php echo htmlspecialchars($destino['nombre']); ?>, <?php echo htmlspecialchars($destino['pais']); ?></h1>
-        <p class="hero-sub"><?php echo htmlspecialchars($destino['descripcion']); ?></p>
+        <span class="dest-badge"><?php echo htmlspecialchars($destino->categoria); ?></span>
+        <h1 class="hero-title"><?php echo htmlspecialchars($destino->nombre); ?>, <?php echo htmlspecialchars($destino->pais); ?></h1>
+        <p class="hero-sub"><?php echo htmlspecialchars($destino->descripcion); ?></p>
       </div>
       <div class="col-lg-5 text-lg-end">
         <div class="dest-info-card mt-4 mt-lg-0">
           <div class="dest-meta mb-3">
             <div class="dest-label">Precio desde</div>
-            <div class="dest-value">$<?php echo number_format($destino['precio'], 0, ',', '.'); ?> <small><?php echo htmlspecialchars($destino['moneda']); ?></small></div>
+            <div class="dest-value">$<?php echo $destino->precioFormateado(); ?> <small><?php echo htmlspecialchars($destino->moneda); ?></small></div>
           </div>
           <div class="dest-meta mb-3">
             <div class="dest-label">Categoría</div>
-            <div class="dest-value"><?php echo htmlspecialchars($destino['categoria']); ?></div>
+            <div class="dest-value"><?php echo htmlspecialchars($destino->categoria); ?></div>
           </div>
           <div class="dest-meta">
             <div class="dest-label">País</div>
-            <div class="dest-value"><?php echo htmlspecialchars($destino['pais']); ?></div>
+            <div class="dest-value"><?php echo htmlspecialchars($destino->pais); ?></div>
           </div>
         </div>
       </div>
@@ -162,69 +114,78 @@ $destino = [
           <h2 class="section-title">Qué incluye esta experiencia</h2>
           <p class="section-sub">Conoce las mejores actividades y servicios que te esperan en este paquete pensado para disfrutar sin preocupaciones.</p>
 
-          <div class="row gy-4 mt-4">
-            <div class="col-md-6">
-              <div class="dest-info-card p-4 h-100">
-                <h3 class="mb-3">Servicios incluidos</h3>
-                <ul class="list-unstyled m-0">
-                  <?php foreach ($destino['servicios'] as $service) : ?>
-                    <li class="mb-2"><i class="bi bi-check2-circle text-success me-2"></i><?php echo htmlspecialchars($service); ?></li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="dest-info-card p-4 h-100">
-                <h3 class="mb-3">Actividades destacadas</h3>
-                <ul class="list-unstyled m-0">
-                  <?php foreach ($destino['actividades'] as $activity) : ?>
-                    <li class="mb-2"><i class="bi bi-star-fill text-warning me-2"></i><?php echo htmlspecialchars($activity); ?></li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-5">
-            <h3 class="mb-3">Itinerario</h3>
-            <div class="timeline">
-              <?php foreach ($destino['itinerario'] as $index => $item) : ?>
-                <div class="timeline-item" style="--i:<?php echo $index; ?>;">
-                  <div class="timeline-marker">
-                    <span class="timeline-badge"><?php echo $index + 1; ?></span>
-                  </div>
-                  <div class="timeline-card">
-                    <div class="timeline-card-header">
-                      <span class="timeline-day"><?php echo htmlspecialchars($item['dia']); ?></span>
-                      <h4 class="timeline-title"><?php echo htmlspecialchars($item['titulo']); ?></h4>
-                    </div>
-                    <p class="timeline-desc"><?php echo htmlspecialchars($item['detalles']); ?></p>
-                  </div>
+          <?php if ($destino->tieneContenidoCompleto()) : ?>
+            <div class="row gy-4 mt-4">
+              <div class="col-md-6">
+                <div class="dest-info-card p-4 h-100">
+                  <h3 class="mb-3">Servicios incluidos</h3>
+                  <ul class="list-unstyled m-0">
+                    <?php foreach ($destino->servicios as $servicio) : ?>
+                      <li class="mb-2"><i class="bi bi-check2-circle text-success me-2"></i><?php echo htmlspecialchars($servicio); ?></li>
+                    <?php endforeach; ?>
+                  </ul>
                 </div>
-              <?php endforeach; ?>
+              </div>
+              <div class="col-md-6">
+                <div class="dest-info-card p-4 h-100">
+                  <h3 class="mb-3">Actividades destacadas</h3>
+                  <ul class="list-unstyled m-0">
+                    <?php foreach ($destino->actividades as $actividad) : ?>
+                      <li class="mb-2"><i class="bi bi-star-fill text-warning me-2"></i><?php echo htmlspecialchars($actividad); ?></li>
+                    <?php endforeach; ?>
+                  </ul>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="mt-5">
-            <h3 class="mb-3">Galería</h3>
-            <div class="gallery-grid">
-              <?php foreach ($destino['galeria'] as $image) : ?>
-                <img src="<?php echo htmlspecialchars($image); ?>" alt="Galería de <?php echo htmlspecialchars($destino['nombre']); ?>" loading="lazy"/>
-              <?php endforeach; ?>
+            <div class="mt-5">
+              <h3 class="mb-3">Itinerario</h3>
+              <div class="timeline">
+                <?php foreach ($destino->itinerario as $index => $item) : ?>
+                  <div class="timeline-item" style="--i:<?php echo $index; ?>;">
+                    <div class="timeline-marker">
+                      <span class="timeline-badge"><?php echo $index + 1; ?></span>
+                    </div>
+                    <div class="timeline-card">
+                      <div class="timeline-card-header">
+                        <span class="timeline-day"><?php echo htmlspecialchars($item['Dia']); ?></span>
+                        <h4 class="timeline-title"><?php echo htmlspecialchars($item['Titulo']); ?></h4>
+                      </div>
+                      <p class="timeline-desc"><?php echo htmlspecialchars($item['Detalle']); ?></p>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              </div>
             </div>
-          </div>
+
+            <?php if ($destino->galeriaImagenIds) : ?>
+              <div class="mt-5">
+                <h3 class="mb-3">Galería</h3>
+                <div class="gallery-grid">
+                  <?php foreach ($destino->galeriaImagenIds as $idImagen) : ?>
+                    <img src="../logica/imagen.php?id=<?php echo $idImagen; ?>" alt="Galería de <?php echo htmlspecialchars($destino->nombre); ?>" loading="lazy"/>
+                  <?php endforeach; ?>
+                </div>
+              </div>
+            <?php endif; ?>
+          <?php else : ?>
+            <div class="dest-info-card p-4 mt-4">
+              <h3 class="mb-2">Estamos preparando esta experiencia</h3>
+              <p class="text-muted mb-0">Todavía estamos cargando el itinerario completo de <?php echo htmlspecialchars($destino->nombre); ?>. Podés reservar tu lugar ahora mismo y te contactamos con todos los detalles.</p>
+            </div>
+          <?php endif; ?>
         </div>
 
         <div class="col-lg-4">
           <div id="reserva" class="dest-info-card p-4 sticky-top" style="top: 92px;">
             <h3 class="mb-3">Reserva tu viaje</h3>
-            <p class="text-muted">Completa los datos y elegí si querés agregar al carrito o comprar ahora.</p>
+            <p class="text-muted">Completá los datos para reservar tu lugar.</p>
             <?php if ($mensaje) : ?>
               <div class="alert alert-<?php echo htmlspecialchars($mensajeTipo); ?>"><?php echo htmlspecialchars($mensaje); ?></div>
             <?php endif; ?>
             <form method="post" action="../logica/guardar_reserva.php">
-              <input type="hidden" name="id_destino" value="<?php echo (int) ID_DESTINO_DB; ?>"/>
-              <input type="hidden" name="volver_a" value="destinos/destino_paris.php"/>
+              <input type="hidden" name="id_destino" value="<?php echo $destino->id; ?>"/>
+              <input type="hidden" name="volver_a" value="<?php echo htmlspecialchars($volverA); ?>"/>
               <div class="mb-3">
                 <label class="form-label">Origen</label>
                 <select class="form-select" name="origen">
@@ -251,8 +212,7 @@ $destino = [
                 </select>
               </div>
               <div class="d-grid gap-2">
-                <button type="submit" name="accion" value="carrito" class="btn btn-outline-primary">Agregar al carrito</button>
-                <button type="submit" name="accion" value="comprar" class="btn btn-search">Comprar ahora</button>
+                <button type="submit" name="accion" value="comprar" class="btn btn-search">Reservar</button>
               </div>
             </form>
           </div>
@@ -270,7 +230,7 @@ $destino = [
         <p class="text-muted">Contactanos para recibir asesoramiento personalizado o reservar tu viaje con un agente.</p>
       </div>
       <div class="col-lg-4 text-lg-end">
-        <a href="#" class="btn btn-cta-outline">Ver otros destinos</a>
+        <a href="../index.php#destinos" class="btn btn-cta-outline">Ver otros destinos</a>
       </div>
     </div>
   </div>

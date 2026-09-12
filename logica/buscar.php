@@ -1,17 +1,6 @@
 <?php
 session_start();
-
-/**
- * Mapa de slugs del buscador -> archivo de destino ya armado.
- * Cuando termines un nuevo destino, agregalo acá con su slug
- * (el mismo "value" que pusiste en el <select name="destino"> del index).
- */
-$destinosDisponibles = [
-    'paris' => '../destinos/destino_paris.php',
-    // 'cancun' => 'destino_cancun.php',
-    // 'roma'   => 'destino_roma.php',
-    // ...
-];
+require_once __DIR__ . '/conexion.php';
 
 $destinoSlug = $_GET['destino'] ?? '';
 $origen = $_GET['origen'] ?? '';
@@ -19,18 +8,24 @@ $fechaIda = $_GET['fecha_ida'] ?? '';
 $fechaVuelta = $_GET['fecha_vuelta'] ?? '';
 $pasajeros = $_GET['pasajeros'] ?? '';
 
-// Si todavía no armamos ese destino, volvemos al listado con un aviso.
-if ($destinoSlug === '' || !isset($destinosDisponibles[$destinoSlug])) {
+$stmt = $pdo->prepare('SELECT Slug FROM destinos WHERE Slug = :slug');
+$stmt->execute(['slug' => $destinoSlug]);
+$destino = $stmt->fetch();
+
+// Si el destino no existe en la base, volvemos al listado con un aviso.
+if (!$destino) {
     header('Location: ../index.php?no_disponible=1#destinos');
     exit;
 }
 
+// Una sola plantilla dibuja cualquier destino: solo cambia el slug.
 $queryParams = http_build_query([
+    'slug' => $destino['Slug'],
     'origen' => $origen,
     'fecha_ida' => $fechaIda,
     'fecha_vuelta' => $fechaVuelta,
     'pasajeros' => $pasajeros,
 ]);
 
-header('Location: ' . $destinosDisponibles[$destinoSlug] . '?' . $queryParams);
+header('Location: ../destinos/destino.php?' . $queryParams);
 exit;
