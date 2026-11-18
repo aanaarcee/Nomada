@@ -1,2 +1,5 @@
-nomada.sql
-img/experiencias/apiMiCorreo.pdf
+# contraseñas reales
+.env
+# configuración propia del servidor (dominio)
+docker-compose.override.yml
+src/img/experiencias/apiMiCorreo.pdf

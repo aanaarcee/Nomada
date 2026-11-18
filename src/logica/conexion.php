@@ -1,8 +1,10 @@
 <?php
-$servidor = 'localhost';
-$usuario = 'root';
-$contraseña = '';
-$baseDatos = 'nomada';
+// En Docker las credenciales llegan por variables de entorno (docker-compose.yml);
+// si no existen, usa los valores locales de XAMPP.
+$servidor = getenv('DB_HOST') ?: 'localhost';
+$usuario = getenv('DB_USER') ?: 'root';
+$contraseña = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$baseDatos = getenv('DB_NAME') ?: 'nomada';
 
 $mysqli = new mysqli($servidor, $usuario, $contraseña, $baseDatos);
 
