@@ -26,7 +26,7 @@ En lugar de tener un archivo por cada página (una para cada destino, una para c
 ## Estructura del proyecto
 
 ```
-eito/
+Nomada/
 ├── docker-compose.yml   # web (PHP + Apache) y base de datos (MySQL)
 ├── Dockerfile           # imagen de la web
 ├── apache-nomada.conf   # configuración de Apache
@@ -50,8 +50,8 @@ eito/
 ### Con Docker Compose (recomendado)
 
 ```bash
-git clone https://github.com/aanaarcee/eito
-cd eito
+git clone https://github.com/aanaarcee/Nomada
+cd Nomada
 cp .env.example .env      # y cambiar las contraseñas
 docker compose up -d --build
 ```
